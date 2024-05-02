@@ -116,3 +116,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+chromedriver-linux64.zip
+chromedriver-linux64/
+google-chrome-stable_current_amd64.deb
+LICENSE.chromedriver
