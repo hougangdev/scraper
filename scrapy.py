@@ -1,4 +1,5 @@
 import csv
+import time
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
@@ -7,6 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
+
 
 # Set up Chrome options
 options = Options()
@@ -38,13 +40,15 @@ try:
     driver.get("https://www.niftygateway.com/rankings")
     
     # Wait for the 'Last 7 Days' button to be clickable
-    WebDriverWait(driver, 50).until(
+    WebDriverWait(driver, 300).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-testid="component-button"]'))
     )
     
     # Refetch and click the 'Last 7 Days' button
-    button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button/div')
+    button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button')
     ActionChains(driver).move_to_element(button).click().perform()
+    
+    time.sleep(10)
     
     # Wait for AJAX or page updates as necessary
     WebDriverWait(driver, 300).until(
@@ -52,11 +56,12 @@ try:
     )
     
     # Ensure the table is fully loaded and stable before continuing
-    WebDriverWait(driver, 50).until(
+    WebDriverWait(driver, 300).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody"))
     )
     
-    rows = driver.find_elements(By.CSS_SELECTOR, "tr.MuiTableRow-root")
+    # rows = driver.find_elements(By.CSS_SELECTOR, "tr.MuiTableRow-root")
+    rows = driver.find_elements(By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr")
     
     # Open CSV file to write the extracted values
     with open('output.csv', 'w', newline='') as file:
