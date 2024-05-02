@@ -64,7 +64,7 @@ try:
     rows = driver.find_elements(By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr")
     
     # Open CSV file to write the extracted values
-    with open('output.csv', 'w', newline='') as file:
+    with open('volume.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         
         # Iterate through each row and get the text from the 3rd 'td'
