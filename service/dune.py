@@ -1,10 +1,10 @@
+import pandas as pd
+import os
 from dune_client.types import QueryParameter
 from dune_client.client import DuneClient
 from dune_client.query import QueryBase
 from dotenv import load_dotenv
 import csv
-import os
-from datetime import datetime, timedelta
 
 # setting up
 load_dotenv()
@@ -13,26 +13,37 @@ dune = DuneClient.from_env()
 # dune query response
 response = dune.get_latest_result(1933290)
 
-# date formatting
-today = datetime.now()
-seven_days_ago = today - timedelta(days=7)
+filepath = 'output/7_day_volume.csv'
 
-start_date_str = seven_days_ago.strftime("%m%d")
-end_date_str = today.strftime("%m%d")
-
-if response and response.result and response.result.rows: #check if response is not empty
+if response and response.result and response.result.rows:  # check if response is not empty
     result_rows = response.result.rows  
-    
-    filename = f'{start_date_str}-{end_date_str}.csv'
-
     fieldnames = response.result.metadata.column_names
 
-    with open(filename, mode='w', newline='') as file:
+    with open(filepath, mode='w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         for row in result_rows:
             writer.writerow(row)
 
-    print(f"Data successfully written to {filename}")
+    print(f"Data successfully written to {filepath}")
+
+    # Load data from CSV
+    df = pd.read_csv(filepath)
+
+    # Convert 'volume' to integer for full number formatting
+    df['volume'] = pd.to_numeric(df['volume'], errors='coerce')
+    df.dropna(subset=['volume'], inplace=True)
+    df['volume'] = df['volume'].astype(int)
+
+    # Sort by 'volume' in descending order
+    df = df.sort_values(by='volume', ascending=False)
+
+    # Get the top 4 performing marketplaces
+    top_four = df.head(4)
+
+    # Format output
+    print("Top 4 Performing Marketplaces:")
+    print(top_four[['project', 'volume']].to_string(index=False, header=True))
+    print(response.result)
 else:
     print("No data available to write.")
