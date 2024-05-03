@@ -1,141 +1,144 @@
 import csv
 import time
 import os
+import pandas as pd
+import sys
+
+# module path
+nifty_module_path = 'utils'
+sys.path.append(nifty_module_path)
+
+# module imports
+import nifty_scrap
+
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from dune_client.types import QueryParameter
 from dune_client.client import DuneClient
 from dune_client.query import QueryBase
 from dotenv import load_dotenv
-from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException
+from nifty_scrap import get_total_sales_volume
 
-# set up Chrome options
-options = Options()
-options.add_argument("--disable-gpu")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-
-# path to your ChromeDriver
-service = Service(executable_path="/usr/local/bin/chromedriver")
-
-# initialize the driver
-driver = webdriver.Chrome(service=service, options=options)
-
-def find_and_get_text(driver, css_selector):
-    attempts = 0
-    while attempts < 3:
-        try:
-            element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selector))
-            )
-            return element.text
-        except StaleElementReferenceException:
-            print("Encountered a stale element, retrying...")
-            attempts += 1
-    raise Exception("Failed to retrieve element after multiple attempts.")
-
-def clean_price(price):
-    cleaned_price = price.replace("$", "").replace(",", "")
-    return float(cleaned_price)
-
-def read_and_clean_data(input_file, output_file):
-    with open(input_file, 'r', newline='') as infile, open(output_file, 'w', newline='') as outfile:
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile)
-        # read each row in the input csv, clean it, and write to output csv
-        for row in reader:
-            if row: # if row is not empty
-                cleaned_price = clean_price(row[0])
-                writer.writerow([cleaned_price])
-
-# summing up all the values in the cleaned csv
-def sum_volume(input_file):
-    total_sum = 0
-    with open(input_file, 'r', newline='') as infile:
-        reader = csv.reader(infile)
-        for row in reader:
-            if row:  # ensure the row is not empty
-                try:
-                    total_sum += float(row[0])
-                except ValueError:
-                    print(f"Skipping invalid value: {row[0]}")
-    return total_sum
-
-try:
-    driver.get("https://www.niftygateway.com/rankings")
-    
-    # wait for the 'Last 7 Days' button to be clickable
-    WebDriverWait(driver, 300).until(
-        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button'))
-    )
-    
-    time.sleep(5)
-    
-    # refetch and click the 'Last 7 Days' button
-    button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button')
-    ActionChains(driver).move_to_element(button).click().perform()
-    
-    # wait after clicking button
-    time.sleep(15)
-    
-    # wait for AJAX or page updates as necessary
-    WebDriverWait(driver, 300).until(
-        lambda x: x.execute_script("return document.readyState") == 'complete'
-    )
-    
-    # ensure the table is fully loaded and stable before continuing
-    WebDriverWait(driver, 300).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody"))
-    )
-    
-    # rows = driver.find_elements(By.CSS_SELECTOR, "tr.MuiTableRow-root")
-    rows = driver.find_elements(By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr")
-    
-    # Open CSV file to write the extracted values
-    with open('output/volume.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        
-        # Iterate through each row and get the text from the 3rd 'td'
-        for row in rows:
-            third_td_css = "td:nth-of-type(3) span"  # More specific CSS selector for the third 'td' span
-            try:
-                span_text = find_and_get_text(row, third_td_css)
-                writer.writerow([span_text])
-            except Exception as e:
-                print(f"An error occurred: {str(e)}")
-                
-finally:
-    driver.quit()
-
-
-
-                
-# specify input and output file name
-input_csv_path = 'output/volume.csv'
-output_csv_path = 'output/cleaned_volume.csv'
-
-read_and_clean_data(input_csv_path, output_csv_path)
-
-
-# Calculate the total sum from the cleaned CSV file
-total_sales_volume = sum_volume(output_csv_path)
-print(f"Total Sales Volume: {total_sales_volume}")
-
-
-
-# setting up
+# dune setup
 load_dotenv()
 dune = DuneClient.from_env()
 
-# dune query response
-response = dune.get_latest_result(1933290)
-print(response)
+# abstract class for data providers
+class DataProvider(ABC):
+    name: str
+    
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        return "data-provider"
+    
+    @abstractmethod
+    def get_7day_volume(self):
+        # return 7 day volume as a float
+        # ...
+        pass
+
+# concrete classes for marketplaces
+class NiftyProvider(DataProvider):
+    
+    @property
+    def name(self) -> str:
+        return "nifty_gateway"
+    
+    def get_7day_volume(self):
+        #method implementation - selenium
+        nifty_gateway_volume = get_total_sales_volume()
+        return nifty_gateway_volume
+        
+class OpenseaProvider(DataProvider):
+    
+    @property
+    def name(self) -> str:
+        return "opensea"
+    
+    def get_7day_volume(self):
+        response = dune.get_latest_result(1933290)
+        if response and response.result and response.result.rows:
+            try:
+                # Find the 'OpenSea' entry and return its volume
+                opensea_volume = next(row['volume'] for row in response.result.rows if row['project'] == 'OpenSea')
+                return f"{opensea_volume:.2f}"
+            except StopIteration:
+                # Handle the case where 'OpenSea' is not found
+                return 0
+        return 0  # Return 0 if there's no valid data
+
+
+class BlurProvider(DataProvider):
+    
+    @property
+    def name(self) -> str:
+        return "blur"
+    
+    def get_7day_volume(self):
+        response = dune.get_latest_result(1933290)
+        if response and response.result and response.result.rows:
+            try:
+                blur_volume = next(row['volume'] for row in response.result.rows if row['project'] == 'Blur')
+                return f"{blur_volume:.2f}"
+            except StopIteration:
+                # Handle the case where 'Blur' is not found
+                return 0
+        return 0  # Return 0 if there's no valid data
+    
+class MagicEdenProvider(DataProvider):
+    
+    @property
+    def name(self) -> str:
+        return "magic_eden"
+    
+    def get_7day_volume(self):
+        response = dune.get_latest_result(1933290)
+        if response and response.result and response.result.rows:
+            try:
+                magic_eden_volume = next(row['volume'] for row in response.result.rows if row['project'] == 'Magic Eden')
+                return f"{magic_eden_volume:.2f}"
+            except StopIteration:
+                # Handle the case where 'Magic Eden' is not found
+                return 0
+        return 0  # Return 0 if there's no valid data
+    
+class CryptoPunksProvider(DataProvider):
+    
+    @property
+    def name(self) -> str:
+        return "cryptopunks"
+    
+    def get_7day_volume(self):
+        response = dune.get_latest_result(1933290)
+        if response and response.result and response.result.rows:
+            try:
+                cryptopunks_volume = next(row['volume'] for row in response.result.rows if row['project'] == 'CryptoPunks')
+                return f"{cryptopunks_volume:.2f}"
+            except StopIteration:
+                # Handle the case where 'CryptoPunks' is not found
+                return 0
+        return 0  # Return 0 if there's no valid data
+
+# setting up the dataframe
+data_providers = [
+    NiftyProvider(),
+    OpenseaProvider(),
+    BlurProvider(),
+    MagicEdenProvider(),
+    CryptoPunksProvider()
+]
+
+COLUMN_NAMES = ["project", "7_day_volume"]
+
+df = pd.DataFrame(columns=COLUMN_NAMES)
+
+for provider in data_providers:
+    volume = float(provider.get_7day_volume())
+    formatted_volume = f"{volume:.2f}"
+    df.loc[len(df), df.columns] = [provider.name, formatted_volume]
+
+print(df)
 
 # date formatting
 today = datetime.now()
@@ -144,20 +147,5 @@ seven_days_ago = today - timedelta(days=7)
 start_date_str = seven_days_ago.strftime("%m%d")
 end_date_str = today.strftime("%m%d")
 
-if response and response.result and response.result.rows: #check if response is not empty
-    result_rows = response.result.rows  
-    
-    filename_path = f'output/{start_date_str}-{end_date_str}.csv'
-
-    fieldnames = response.result.metadata.column_names
-
-    with open(filename_path, mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        for row in result_rows:
-            writer.writerow(row)
-        writer.writerow({fieldnames[0]: "Nifty Gateway", fieldnames[1]: total_sales_volume})
-
-    print(f"Data successfully written to {filename_path}")
-else:
-    print("No data available to write.")
+# CSV writing
+df.to_csv(f"output/{start_date_str}-{end_date_str}.csv", index=False)
