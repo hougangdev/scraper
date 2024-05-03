@@ -38,7 +38,7 @@ class NiftyProvider(DataProvider):
     
     @property
     def name(self) -> str:
-        return "nifty"
+        return "nifty_gateway"
     
     def get_7day_volume(self):
         #method implementation - selenium
@@ -48,7 +48,7 @@ class OpenseaProvider(DataProvider):
     
     @property
     def name(self) -> str:
-        return "open-sea"
+        return "opensea"
     
     def get_7day_volume(self):
         #method implementation - dune
