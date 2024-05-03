@@ -38,12 +38,11 @@ if response and response.result and response.result.rows:  # check if response i
     # Sort by 'volume' in descending order
     df = df.sort_values(by='volume', ascending=False)
 
-    # Get the top 4 performing marketplaces
-    top_four = df.head(4)
+    # Get the top 3 performing marketplaces
+    top_three = df.head(3)
 
     # Format output
-    print("Top 4 Performing Marketplaces:")
-    print(top_four[['project', 'volume']].to_string(index=False, header=True))
-    print(response.result)
+    print("Top 3 Performing Marketplaces:")
+    print(top_three[['project', 'volume']].to_string(index=False, header=True))
 else:
     print("No data available to write.")
