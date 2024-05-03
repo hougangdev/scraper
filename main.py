@@ -40,6 +40,33 @@ def find_and_get_text(driver, css_selector):
             attempts += 1
     raise Exception("Failed to retrieve element after multiple attempts.")
 
+def clean_price(price):
+    cleaned_price = price.replace("$", "").replace(",", "")
+    return float(cleaned_price)
+
+def read_and_clean_data(input_file, output_file):
+    with open(input_file, 'r', newline='') as infile, open(output_file, 'w', newline='') as outfile:
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile)
+        # read each row in the input csv, clean it, and write to output csv
+        for row in reader:
+            if row: # if row is not empty
+                cleaned_price = clean_price(row[0])
+                writer.writerow([cleaned_price])
+
+# summing up all the values in the cleaned csv
+def sum_volume(input_file):
+    total_sum = 0
+    with open(input_file, 'r', newline='') as infile:
+        reader = csv.reader(infile)
+        for row in reader:
+            if row:  # ensure the row is not empty
+                try:
+                    total_sum += float(row[0])
+                except ValueError:
+                    print(f"Skipping invalid value: {row[0]}")
+    return total_sum
+
 try:
     driver.get("https://www.niftygateway.com/rankings")
     
@@ -85,19 +112,6 @@ finally:
     driver.quit()
 
 
-def clean_price(price):
-    cleaned_price = price.replace("$", "").replace(",", "")
-    return float(cleaned_price)
-
-def read_and_clean_data(input_file, output_file):
-    with open(input_file, 'r', newline='') as infile, open(output_file, 'w', newline='') as outfile:
-        reader = csv.reader(infile)
-        writer = csv.writer(outfile)
-        # read each row in the input csv, clean it, and write to output csv
-        for row in reader:
-            if row: # if row is not empty
-                cleaned_price = clean_price(row[0])
-                writer.writerow([cleaned_price])
 
                 
 # specify input and output file name
@@ -106,18 +120,6 @@ output_csv = 'cleaned_volume.csv'
 
 read_and_clean_data(input_csv, output_csv)
 
-# summing up all the values in the cleaned csv
-def sum_volume(input_file):
-    total_sum = 0
-    with open(input_file, 'r', newline='') as infile:
-        reader = csv.reader(infile)
-        for row in reader:
-            if row:  # ensure the row is not empty
-                try:
-                    total_sum += float(row[0])
-                except ValueError:
-                    print(f"Skipping invalid value: {row[0]}")
-    return total_sum
 
 # Calculate the total sum from the cleaned CSV file
 total_sales_volume = sum_volume(output_csv)
