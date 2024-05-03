@@ -189,3 +189,6 @@ end_date_str = today.strftime("%m%d")
 
 # CSV writing
 df.to_csv(f"output/{start_date_str}-{end_date_str}.csv", index=False)
+
+if __name__ == "__main__":
+    pass
