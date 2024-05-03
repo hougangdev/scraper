@@ -135,6 +135,7 @@ dune = DuneClient.from_env()
 
 # dune query response
 response = dune.get_latest_result(1933290)
+print(response)
 
 # date formatting
 today = datetime.now()
