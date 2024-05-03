@@ -72,8 +72,10 @@ try:
     
     # wait for the 'Last 7 Days' button to be clickable
     WebDriverWait(driver, 300).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-testid="component-button"]'))
+        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button'))
     )
+    
+    time.sleep(5)
     
     # refetch and click the 'Last 7 Days' button
     button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button')
@@ -96,7 +98,7 @@ try:
     rows = driver.find_elements(By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr")
     
     # Open CSV file to write the extracted values
-    with open('volume.csv', 'w', newline='') as file:
+    with open('output/volume.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         
         # Iterate through each row and get the text from the 3rd 'td'
@@ -115,14 +117,14 @@ finally:
 
                 
 # specify input and output file name
-input_csv = 'volume.csv'
-output_csv = 'cleaned_volume.csv'
+input_csv_path = 'output/volume.csv'
+output_csv_path = 'output/cleaned_volume.csv'
 
-read_and_clean_data(input_csv, output_csv)
+read_and_clean_data(input_csv_path, output_csv_path)
 
 
 # Calculate the total sum from the cleaned CSV file
-total_sales_volume = sum_volume(output_csv)
+total_sales_volume = sum_volume(output_csv_path)
 print(f"Total Sales Volume: {total_sales_volume}")
 
 
@@ -144,17 +146,17 @@ end_date_str = today.strftime("%m%d")
 if response and response.result and response.result.rows: #check if response is not empty
     result_rows = response.result.rows  
     
-    filename = f'{start_date_str}-{end_date_str}.csv'
+    filename_path = f'output/{start_date_str}-{end_date_str}.csv'
 
     fieldnames = response.result.metadata.column_names
 
-    with open(filename, mode='w', newline='') as file:
+    with open(filename_path, mode='w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         for row in result_rows:
             writer.writerow(row)
         writer.writerow({fieldnames[0]: "Nifty Gateway", fieldnames[1]: total_sales_volume})
 
-    print(f"Data successfully written to {filename}")
+    print(f"Data successfully written to {filename_path}")
 else:
     print("No data available to write.")
