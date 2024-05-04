@@ -1,0 +1,5 @@
+selenium==4.20.0
+python-dotenv==1.0.1
+pandas==2.0.3
+# Assuming 'dune-client' is the correct package name and version
+dune-client==1.7.3

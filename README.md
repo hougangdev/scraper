@@ -9,7 +9,7 @@ Before you begin, ensure you have the following installed on your system:
 - Python 3.8 or higher
 - pip (Python package installer)
 
-## Installation
+## Set Up
 
 Follow these steps to set up the project locally:
 
@@ -18,6 +18,23 @@ Follow these steps to set up the project locally:
    ```bash
    git clone https://github.com/hougangdev/scraper.git
    cd scraper
+   ```
+
+2. **Create the Virtual Environment**
+
+   ```python
+   python3 -m venv venv
+   ```
+
+3. **Activate the Virtual Environment**
+
+   ```bash
+   source venv/bin/activate
+   ```
+
+4. **Install Python Modules**
+   ```bash
+   pip install -r requirements.txt
    ```
 
 ## Maintenance and Updates
