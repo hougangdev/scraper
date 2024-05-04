@@ -58,7 +58,7 @@ def fetch_data(driver):
         # Wait for the table to refresh with new data
         print("Waiting for table to refresh...")
         WebDriverWait(driver, 300).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, "td:nth-of-type(3)"))
+            EC.visibility_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr[50]/td[2]/p/a/div/p/b"))
         )
         print("Table refreshed.")
     except TimeoutException:
