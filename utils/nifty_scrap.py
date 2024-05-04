@@ -48,14 +48,23 @@ def fetch_data(driver):
     )
     
     button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[2]/div[1]/div[1]/div[2]/button')
+    print("Button located. Clicking...")
     
     ActionChains(driver).move_to_element(button).click().perform()
+    print("Button clicked.")
     
     time.sleep(10)  # Wait for AJAX loads
     
-    WebDriverWait(driver, 300).until(
-        EC.visibility_of_element_located((By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr[50]"))
-    )
+    try:
+        # Wait for the table to refresh with new data
+        print("Waiting for table to refresh...")
+        WebDriverWait(driver, 300).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "td:nth-of-type(3)"))
+        )
+        print("Table refreshed.")
+    except TimeoutException:
+        print("Table didn't refresh within the timeout period.")
+        
     rows = driver.find_elements(By.XPATH, "/html/body/div[1]/div/div/div[2]/div[2]/div/div/div[1]/div/table/tbody/tr")
     
     return [{'volume': find_and_get_text(row, "td:nth-of-type(3)")} for row in rows]
