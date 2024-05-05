@@ -7,10 +7,11 @@ This project is a web scraping tool designed to extract data from websites. It u
   <a href="#start">Start</a> •
   <a href="#methodology">Methodology</a> •
   <a href="#maintenance">Maintenance and Updates</a> •
+  <a href="#filestructure"> File Structure</a> • 
   <a href="#license">License</a> •
 </p>
 
-<div id="setup"></div>
+<div id="setup">
 
 ## Set Up
 
@@ -92,9 +93,11 @@ Follow these steps to set up the project locally:
 DUNE_API_KEY= abcdefghijklmnopqrstuvwxyz
 ```
 
+</div>
+
 ## Start
 
-<div id="start"></div>
+<div id="start">
 
 Ensure that .env has dune api key!
 
@@ -111,9 +114,11 @@ Ensure that .env has dune api key!
    python3 main.py
    ```
 
+</div>
+
 ## Methodology
 
-<div id="methodology"></div>
+<div id="methodology">
 
 ### Choice of Dune Analytics for Onchain Data
 
@@ -144,9 +149,11 @@ To evaluate the performance of various NFT marketplaces, I have decided to focus
 `main.py`: This script combines the data extracted from Nifty Gateway via Selenium with the onchain data obtained from Dune Analytics. The integration of these data sources in a single script allows for a comprehensive comparison across different types of NFT marketplaces. The combined data is then processed and exported to CSV format, facilitating easy access and manipulation for subsequent comparative analyses and decision-making processes.
 This methodology ensures a robust analysis of NFT marketplaces by incorporating both onchain and offchain data, providing a holistic view of the ecosystem's dynamics and performance.
 
+</div>
+
 ## Maintenance and Updates
 
-<div id="maintenance"></div>
+<div id="maintenance">
 
 Maintain the scraper by regularly updating the Python dependencies to mitigate security risks and ensure compatibility. Use pip to upgrade packages:
 
@@ -154,6 +161,10 @@ Maintain the scraper by regularly updating the Python dependencies to mitigate s
 pip install --upgrade package-name
 ```
 
+</div>
+
 ## License
 
+<div id="License">
 Apache License 2.0
+</div>
