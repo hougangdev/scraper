@@ -7,7 +7,6 @@ This project is a web scraping tool designed to extract data from websites. It u
   <a href="#start">Start</a> •
   <a href="#methodology">Methodology</a> •
   <a href="#maintenance">Maintenance and Updates</a> •
-  <a href="#filestructure"> File Structure</a> • 
   <a href="#license">License</a> •
 </p>
 
