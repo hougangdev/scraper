@@ -121,27 +121,19 @@ Ensure that .env has dune api key!
 
 ### Choice of Dune Analytics for Onchain Data
 
----
-
 For assessing the performance of NFT marketplaces that primarily transact onchain, I have selected [Dune Analytics](https://dune.com) as the primary data source. This decision was driven by the reliability and comprehensiveness of onchain data, which is considered the most accurate and tamper-proof source of information for blockchain transactions. Dune Analytics provides direct access to this data, enabling precise and real-time analysis of marketplace activity.
 
 Dune Query No: 1933290, 2021068
 
 ### Web Scraping Nifty Gateway with Selenium
 
----
-
 For the Nifty Gateway platform, which primarily handles transactions via credit card rather than onchain methods, a different approach was required. I have chosen to use Selenium for web scraping to gather data directly from the website. Given the dynamic nature of Nifty Gateway's web pages and the need to interact with JavaScript elements effectively, Selenium was chosen for its robust capabilities in handling such complexities. The use of a non-headless browser was necessary to ensure full loading of JavaScript-rendered content, which is essential for accessing accurate and complete data from the platform.
 
 ### Selection of Performance Metrics: Volume and Royalties
 
----
-
 To evaluate the performance of various NFT marketplaces, I have decided to focuse on two key metrics: transaction volume and royalties earned. These metrics were chosen because they provide a clear indication of both the economic activity and the financial health of the artists and creators involved in the marketplace. Volume gives a measure of overall market activity and liquidity, while royalties reflect the ongoing benefits accruing to original creators, highlighting the sustainability and creator-friendliness of the marketplace.
 
 ### Implementation in Python Scripts
-
----
 
 `dune.py`: This script interfaces with Dune Analytics through their API to fetch relevant onchain data about NFT marketplaces. The script filters and narrows down the list of marketplaces based on predefined criteria to identify those with significant activity and potential for in-depth analysis. It also includes functionality to export this data to CSV files for further analysis or reporting.
 
@@ -159,6 +151,98 @@ Maintain the scraper by regularly updating the Python dependencies to mitigate s
 ```bash
 pip install --upgrade package-name
 ```
+
+### Adding New DataProvider Abstract Methods
+
+1. **Update DataProvider abstract base class**
+
+   ```python
+   from abc import ABC, abstractmethod
+
+   class DataProvider(ABC):
+
+       @abstractmethod
+       def get_7day_volume(self):
+           """Retrieve the volume of transactions over the past 7 days."""
+           pass
+
+       @abstractmethod
+       def get_royalties_earned(self):
+           """Calculate royalties earned from transactions."""
+           pass
+
+       @abstractmethod
+       def get_example_data(self):
+           """Retrieve some data"""
+           pass
+
+   ```
+
+2. **Implementing Abstract Methods in Subclasses**
+
+   ```python
+   class NiftyProvider(DataProvider):
+
+    def get_7day_volume(self):
+        # Implementation specific to NiftyProvider
+        pass
+
+    def get_royalties_earned(self):
+        # Implementation specific to NiftyProvider
+        pass
+
+    def get_some_data(self):
+        # Some implementation
+        return some_data_fetched
+
+   ```
+
+### Adding New Data Provider Subclass
+
+1.  **Create a New DataProvider Subclass**
+
+    To integrate a new marketplace to analyse, A new DataProvider has to be added. To create a DataProvider, create a subclass of the DataProvider abstract base class. This class must implement the required methods get_7day_volume and get_royalties_earned.
+
+    Example Code:
+
+    ```python
+    from data_provider_base import DataProvider # Ensure the correct import path
+
+    class NewMarketplaceProvider(DataProvider):
+
+        @property
+        def name(self) -> str:
+            return "new_marketplace"
+
+        def __init__(self):
+            self._volume = None
+
+        def get_7day_volume(self):
+            # Implementation...
+            return f"{self._volume:.2f}"
+
+        def get_royalties_earned(self):
+            # Implementation...
+            return f"{royalties:.2f}"
+
+    ```
+
+2.  **Implement Data Fetching**  
+    Fill in the fetch_volume_from_marketplace with logic specific to the new marketplace, whether it’s via API calls, web scraping, or another method.
+
+3.  **Update the Configuration**  
+    Add your new DataProvider to the list of providers in your main application module.
+
+    ```python
+    Example Code:
+    data_providers = [
+    NiftyProvider(),
+    OpenseaProvider(),
+    BlurProvider(),
+    MagicEdenProvider(),
+    NewMarketplaceProvider(), # Adding the new provider
+    ]
+    ```
 
 </div>
 
