@@ -2,14 +2,22 @@
 
 This project is a web scraping tool designed to extract data from websites. It uses Python and can be customized to scrape different types of data based on user requirements.
 
-## Prerequisites
+<p align="center">•
+  <a href="#setup">Set Up</a> •
+  <a href="#start">Start</a> •
+  <a href="#methodology">Methodology</a> •
+  <a href="#maintenance">Maintenance and Updates</a> •
+  <a href="#license">License</a> •
+</p>
+
+<div id="setup"></div>
+
+## Set Up
 
 Before you begin, ensure you have the following installed on your system:
 
 - Python 3.8 or higher
 - pip (Python package installer)
-
-## Set Up
 
 Follow these steps to set up the project locally:
 
@@ -84,7 +92,9 @@ Follow these steps to set up the project locally:
 DUNE_API_KEY= abcdefghijklmnopqrstuvwxyz
 ```
 
-## Running the Project
+## Start
+
+<div id="start"></div>
 
 Ensure that .env has dune api key!
 
@@ -103,7 +113,40 @@ Ensure that .env has dune api key!
 
 ## Methodology
 
+<div id="methodology"></div>
+
+### Choice of Dune Analytics for Onchain Data
+
+---
+
+For assessing the performance of NFT marketplaces that primarily transact onchain, I have selected [Dune Analytics](https://dune.com) as the primary data source. This decision was driven by the reliability and comprehensiveness of onchain data, which is considered the most accurate and tamper-proof source of information for blockchain transactions. Dune Analytics provides direct access to this data, enabling precise and real-time analysis of marketplace activity.
+
+Dune Query No: 1933290, 2021068
+
+### Web Scraping Nifty Gateway with Selenium
+
+---
+
+For the Nifty Gateway platform, which primarily handles transactions via credit card rather than onchain methods, a different approach was required. I have chosen to use Selenium for web scraping to gather data directly from the website. Given the dynamic nature of Nifty Gateway's web pages and the need to interact with JavaScript elements effectively, Selenium was chosen for its robust capabilities in handling such complexities. The use of a non-headless browser was necessary to ensure full loading of JavaScript-rendered content, which is essential for accessing accurate and complete data from the platform.
+
+### Selection of Performance Metrics: Volume and Royalties
+
+---
+
+To evaluate the performance of various NFT marketplaces, I have decided to focuse on two key metrics: transaction volume and royalties earned. These metrics were chosen because they provide a clear indication of both the economic activity and the financial health of the artists and creators involved in the marketplace. Volume gives a measure of overall market activity and liquidity, while royalties reflect the ongoing benefits accruing to original creators, highlighting the sustainability and creator-friendliness of the marketplace.
+
+### Implementation in Python Scripts
+
+---
+
+`dune.py`: This script interfaces with Dune Analytics through their API to fetch relevant onchain data about NFT marketplaces. The script filters and narrows down the list of marketplaces based on predefined criteria to identify those with significant activity and potential for in-depth analysis. It also includes functionality to export this data to CSV files for further analysis or reporting.
+
+`main.py`: This script combines the data extracted from Nifty Gateway via Selenium with the onchain data obtained from Dune Analytics. The integration of these data sources in a single script allows for a comprehensive comparison across different types of NFT marketplaces. The combined data is then processed and exported to CSV format, facilitating easy access and manipulation for subsequent comparative analyses and decision-making processes.
+This methodology ensures a robust analysis of NFT marketplaces by incorporating both onchain and offchain data, providing a holistic view of the ecosystem's dynamics and performance.
+
 ## Maintenance and Updates
+
+<div id="maintenance"></div>
 
 Maintain the scraper by regularly updating the Python dependencies to mitigate security risks and ensure compatibility. Use pip to upgrade packages:
 
@@ -111,4 +154,6 @@ Maintain the scraper by regularly updating the Python dependencies to mitigate s
 pip install --upgrade package-name
 ```
 
-source venv/bin/activate
+## License
+
+Apache License 2.0
