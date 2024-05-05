@@ -154,6 +154,8 @@ pip install --upgrade package-name
 
 ### Adding New DataProvider Abstract Methods
 
+To add a new metric to be included in measuring the performance of the NFT marketplace, the `DataProvider` abstract base class has to be updated with the new abstract method.
+
 1. **Update DataProvider abstract base class**
 
    ```python
@@ -201,7 +203,7 @@ pip install --upgrade package-name
 
 1.  **Create a New DataProvider Subclass**
 
-    To integrate a new marketplace to analyse, A new DataProvider has to be added. To create a DataProvider, create a subclass of the DataProvider abstract base class. This class must implement the required methods get_7day_volume and get_royalties_earned.
+    To integrate a new marketplace to analyse, A new `DataProvider` has to be added. To create a `DataProvider`, create a subclass of the `DataProvider` abstract base class. This class must implement the required methods `get_7day_volume` and `get_royalties_earned`.
 
     Example Code:
 
