@@ -95,9 +95,9 @@ DUNE_API_KEY= abcdefghijklmnopqrstuvwxyz
 
 </div>
 
-## Start
-
 <div id="start">
+
+## Start
 
 Ensure that .env has dune api key!
 
@@ -116,9 +116,9 @@ Ensure that .env has dune api key!
 
 </div>
 
-## Methodology
-
 <div id="methodology">
+
+## Methodology
 
 ### Choice of Dune Analytics for Onchain Data
 
@@ -151,9 +151,9 @@ This methodology ensures a robust analysis of NFT marketplaces by incorporating 
 
 </div>
 
-## Maintenance and Updates
-
 <div id="maintenance">
+
+## Maintenance and Updates
 
 Maintain the scraper by regularly updating the Python dependencies to mitigate security risks and ensure compatibility. Use pip to upgrade packages:
 
@@ -163,8 +163,10 @@ pip install --upgrade package-name
 
 </div>
 
+<div id="License">
+
 ## License
 
-<div id="License">
 Apache License 2.0
+
 </div>
